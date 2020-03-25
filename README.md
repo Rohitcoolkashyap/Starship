@@ -1,6 +1,8 @@
 # Starship
 It is a classic spaceship shooting game.
 
+# after open this link clone the project on your pc
+
 # dependecies
 1. install python 3.8 (https://www.python.org/downloads/)
 2. install pygame (pip install pygame)
