@@ -20,9 +20,11 @@ bulletSound = pygame.mixer.Sound("fire.wav")
 hitSound = pygame.mixer.Sound("bangSmall.wav")
 music = pygame.mixer.music.load("1.mp3")
 
-#pygame.mixer.music.play(-1) # -1 will ensure the song keeps looping
+# pygame.mixer.music.play(-1) # -1 will ensure the song keeps looping
 
 score = 0
+
+
 class Space_ship:
     def __init__(self, ship_imageX, ship_imageY, vel, ship_width, ship_height, img):
         self.ship_imageX = ship_imageX
@@ -39,41 +41,65 @@ class Space_ship:
 
 class Enemy_ship:
     def __init__(self, enemy_imageX, enemy_imageY, vel, enemy_width, enemy_height, img):
-        self.enemy_imageX = [random.randint(0,1900),random.randint(0,1900),random.randint(0,1900),random.randint(0,1900)]
-        self.enemy_imageY = [5,5,5,5]
-        self.vel = vel
+        self.enemy_imageX = [random.randint(0, 1700), random.randint(0, 1700), random.randint(0, 1700),
+                             random.randint(0, 1700), random.randint(0, 1700), random.randint(0, 1700),
+                             random.randint(0, 1700), random.randint(0, 1700)]
+        self.enemy_imageY = [-225, -225, -225, -225, -100, -100, -100, -100]
+        self.change_X = [10, 10, 10, 10, 10, 10, 10, 10]
+        self.vel_X = 18
+        self.vel_Y = [40,40,40,40,40,40,40,40]
         self.enemy_width = enemy_width
         self.enemy_height = enemy_height
-        self.enemy_image = [pygame.image.load(img),pygame.image.load(img),pygame.image.load(img),pygame.image.load(img)]
+        self.enemy_image = [pygame.image.load(img), pygame.image.load(img), pygame.image.load(img),
+                            pygame.image.load(img), pygame.image.load(img), pygame.image.load(img),
+                            pygame.image.load(img),
+                            pygame.image.load(img)]
         self.displaY_enemy = True
 
-    def isCollide(self,i):
-      d = math.sqrt(math.pow(enemy.enemy_imageX[i] - bullet.X, 2) + math.pow(enemy.enemy_imageY[i] - bullet.Y, 2))
-      if d < 60:
-        return True
-      else:
-        return False
+    def isCollide(self, i):
+        d = math.sqrt(math.pow(self.enemy_imageX[i] - bullet.X, 2) + math.pow(self.enemy_imageY[i] - bullet.Y, 2))
+        if d < 60:
+            return True
+        else:
+            return False
+
+    def game_over(self):
+        pass
+        #over_text = game_end.render("GAME OVER", True, (255, 255, 255))
+      #  screen.blit(over_text, (200, 250))
 
     def draw_enemy(self):
-        global score
+        global score, i
         # blit used to draw image on screen
-        for i in range(4):
-            self.enemy_imageX [i]+= self.vel
-            if self.enemy_imageX[i] <= self.vel + 20:
-                self.vel = 10
-                self.enemy_imageY[i] += 30
-            elif self.enemy_imageX[i] >= 1777:
-                self.vel = -10
-                self.enemy_imageY[i] += 30
+        for i in range(len(self.enemy_image)):
+
+            if score >=15:
+                self.vel_Y[i] = 60
+                self.vel_X = 40
+
+            if self.enemy_imageY[i] >= 700:
+                for j in range(len(self.enemy_image)):
+                    self.enemy_imageY[j] = 2000
+                    self.game_over()
+                    break
+
+            self.enemy_imageX[i] += self.change_X[i]
+            #  print(self.enemy_imageX[0])
+            if self.enemy_imageX[i] <= 0:
+                # print('hii')
+                self.change_X[i] = self.vel_X
+                self.enemy_imageY[i] += self.vel_Y[i]  # 30
+            elif self.enemy_imageX[i] >= 1700:  # 1777:
+                self.change_X[i] =  -self.vel_X
+                self.enemy_imageY[i] += self.vel_Y[i]
             collide = self.isCollide(i)
             if collide:
                 hitSound.play()
-                enemy.enemy_imageX[i] = random.randint(0,1900)
-                enemy.enemy_imageY[i] = 5
-                bullet.Y= ship.ship_imageY
-                score +=1
+                self.enemy_imageX[i] = random.randint(0, 1700)
+                self.enemy_imageY[i] = -100
+                bullet.Y = ship.ship_imageY
+                score += 1
 
-        # self.ship_imageY += 1
             screen.blit(self.enemy_image[i], (self.enemy_imageX[i], self.enemy_imageY[i]))
 
 
@@ -97,13 +123,13 @@ class Bullets:
 re = 0
 
 
-#def isCollide():
- #   d = math.sqrt(math.pow(enemy.enemy_imageX - bullet.X, 2) + math.pow(enemy.enemy_imageY - bullet.Y, 2))
+# def isCollide():
+#   d = math.sqrt(math.pow(enemy.enemy_imageX - bullet.X, 2) + math.pow(enemy.enemy_imageY - bullet.Y, 2))
 
-  #  if d < 60:
-   #     return True
-    #else:
-     #   return False
+#  if d < 60:
+#     return True
+# else:
+#   return False
 
 
 def redrawGameWindow():
@@ -115,21 +141,20 @@ def redrawGameWindow():
 
     if bullet.visible:
         bullet.draw_bullet()
-    text = font.render("Score: " + str(score) , 1, (255,255,255))  # Arguments are: text, anti-aliasing, color
-    text2 = font.render("Rohit Kashyap", 1, (255,255,255))  # Arguments are: text, anti-aliasing, color
+    text = font.render("Score: " + str(score), 1, (255, 255, 255))  # Arguments are: text, anti-aliasing, color
+    text2 = font.render("Rohit Kashyap", 1, (255, 255, 255))  # Arguments are: text, anti-aliasing, color
 
-    screen.blit(text,(5,5))
-    screen.blit(text2,(1600,10))
+    screen.blit(text, (5, 5))
+    screen.blit(text2, (1600, 10))
 
-
-
-  #  text = font.render("Score: " + str(score), 1, (0, 0, 0))  # Arguments are: text, anti-aliasing, color
-
+    #  text = font.render("Score: " + str(score), 1, (0, 0, 0))  # Arguments are: text, anti-aliasing, color
 
     # update window
     pygame.display.update()
 
+
 font = pygame.font.SysFont("comicsans", 50, True)
+game_end = pygame.font.SysFont("comicsans", 50, True)
 
 ship = Space_ship(930, 880, 20, 120, 120, 'shoot3.png')
 enemy = Enemy_ship(930, 10, 10, 120, 120, 'e2.png')
@@ -162,19 +187,18 @@ while running:
         ship.ship_imageX -= ship.vel
 
 
-  #  collide = isCollide()
-   # if collide:
+    #  collide = isCollide()
+    # if collide:
     #    enemy.enemy_imageX = random.randint(0,1900)
-     #   enemy.enemy_imageY = 0
-      #  bullet.Y= ship.ship_imageY
-       # score +=1
-        #print('score : {}'.format(score))
-
+    #   enemy.enemy_imageY = 0
+    #  bullet.Y= ship.ship_imageY
+    # score +=1
+    # print('score : {}'.format(score))
 
     def f():
         if bullet.visible:
             bullet.Y -= 60
-        if bullet.Y <= 0:
+        if bullet.Y <= -10:
             bullet.visible = False
             bullet.Y = ship.ship_imageY
             bullet.next = True
