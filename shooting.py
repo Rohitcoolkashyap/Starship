@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import time
 
 # Initialize the pygame
 pygame.init()
@@ -23,6 +24,7 @@ music = pygame.mixer.music.load("1.mp3")
 # pygame.mixer.music.play(-1) # -1 will ensure the song keeps looping
 
 score = 0
+clock = pygame.time.Clock()
 
 
 class Space_ship:
@@ -47,7 +49,7 @@ class Enemy_ship:
         self.enemy_imageY = [-225, -225, -225, -225, -100, -100, -100, -100]
         self.change_X = [10, 10, 10, 10, 10, 10, 10, 10]
         self.vel_X = 18
-        self.vel_Y = [40,40,40,40,40,40,40,40]
+        self.vel_Y = [40, 40, 40, 40, 40, 40, 40, 40]
         self.enemy_width = enemy_width
         self.enemy_height = enemy_height
         self.enemy_image = [pygame.image.load(img), pygame.image.load(img), pygame.image.load(img),
@@ -58,26 +60,28 @@ class Enemy_ship:
 
     def isCollide(self, i):
         d = math.sqrt(math.pow(self.enemy_imageX[i] - bullet.X, 2) + math.pow(self.enemy_imageY[i] - bullet.Y, 2))
-        if d < 60:
+        if d < 50:
             return True
         else:
             return False
 
     def game_over(self):
-        pass
-        #over_text = game_end.render("GAME OVER", True, (255, 255, 255))
-      #  screen.blit(over_text, (200, 250))
+        over_text = game_end.render("GAME OVER", True, (255, 0, 0))
+
+        screen.blit(over_text, (700, 400))
+        time.sleep(3)
+       # screen.fill((255,255,255))
 
     def draw_enemy(self):
         global score, i
         # blit used to draw image on screen
         for i in range(len(self.enemy_image)):
 
-            if score >=15:
+            if score >= 15:
                 self.vel_Y[i] = 60
                 self.vel_X = 40
 
-            if self.enemy_imageY[i] >= 700:
+            if self.enemy_imageY[i] >= 800:
                 for j in range(len(self.enemy_image)):
                     self.enemy_imageY[j] = 2000
                     self.game_over()
@@ -90,7 +94,7 @@ class Enemy_ship:
                 self.change_X[i] = self.vel_X
                 self.enemy_imageY[i] += self.vel_Y[i]  # 30
             elif self.enemy_imageX[i] >= 1700:  # 1777:
-                self.change_X[i] =  -self.vel_X
+                self.change_X[i] = -self.vel_X
                 self.enemy_imageY[i] += self.vel_Y[i]
             collide = self.isCollide(i)
             if collide:
@@ -154,13 +158,15 @@ def redrawGameWindow():
 
 
 font = pygame.font.SysFont("comicsans", 50, True)
-game_end = pygame.font.SysFont("comicsans", 50, True)
+game_end = pygame.font.SysFont("comicsans", 100, True)
 
 ship = Space_ship(930, 880, 20, 120, 120, 'shoot3.png')
 enemy = Enemy_ship(930, 10, 10, 120, 120, 'e2.png')
 bullet = Bullets(ship.ship_imageX, ship.ship_imageY, 32, 32, 5, 'bullet1.png')
 running = True
+
 while running:
+    clock.tick(27)
     # background color
     screen.fill((0, 0, 0))
     # background image
@@ -187,13 +193,6 @@ while running:
         ship.ship_imageX -= ship.vel
 
 
-    #  collide = isCollide()
-    # if collide:
-    #    enemy.enemy_imageX = random.randint(0,1900)
-    #   enemy.enemy_imageY = 0
-    #  bullet.Y= ship.ship_imageY
-    # score +=1
-    # print('score : {}'.format(score))
 
     def f():
         if bullet.visible:
